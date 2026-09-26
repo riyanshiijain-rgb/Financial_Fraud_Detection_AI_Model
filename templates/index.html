@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FraudLens — AI Fraud Investigation</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+  <div class="page">
+    <header class="topbar">
+      <a class="logo" href="#">
+        <span class="logo-box">✦</span>
+        <span>Fraud<span>Lens</span></span>
+      </a>
+      <div class="top-meta">
+        <span class="status"><i></i> MODEL ONLINE</span>
+        <span class="model-label">XGB / TUNED</span>
+      </div>
+    </header>
+
+    <main>
+      <section class="hero">
+        <div class="hero-copy">
+          <div class="kicker"><span>01</span> TRANSACTION INTELLIGENCE</div>
+          <h1>Know the risk<br><span>before you move.</span></h1>
+          <p>AI-assisted transaction screening for fast, explainable fraud investigation.</p>
+        </div>
+        <div class="hero-orbit" aria-hidden="true">
+          <div class="orbit-ring"></div>
+          <div class="orbit-core"><span>FL</span></div>
+          <div class="orbit-label">AI<br>SCREEN</div>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <article class="card input-card">
+          <div class="card-head">
+            <div>
+              <span class="micro">INPUT / TRANSACTION</span>
+              <h2>Scan a transaction</h2>
+            </div>
+            <button type="button" class="demo-btn" id="demoBtn">↗ LOAD DEMO</button>
+          </div>
+
+          <form id="fraudForm" novalidate>
+            <div class="field">
+              <label for="type">Transaction type</label>
+              <select id="type">
+                <option value="PAYMENT">PAYMENT</option>
+                <option value="CASH_OUT">CASH_OUT</option>
+                <option value="CASH_IN">CASH_IN</option>
+                <option value="TRANSFER">TRANSFER</option>
+                <option value="DEBIT">DEBIT</option>
+              </select>
+            </div>
+
+            <div class="field amount-field">
+              <label for="amount">Transaction amount</label>
+              <div class="input-prefix"><span>₹</span><input id="amount" type="number" min="0" step="0.01" value="25000" required></div>
+            </div>
+
+            <div class="balance-section">
+              <div class="subhead"><span>ACCOUNT FLOW</span><i></i></div>
+              <div class="balance-grid">
+                <div class="field">
+                  <label for="oldbalanceOrg">Origin / before</label>
+                  <input id="oldbalanceOrg" type="number" min="0" step="0.01" value="50000" required>
+                </div>
+                <div class="field">
+                  <label for="newbalanceOrig">Origin / after</label>
+                  <input id="newbalanceOrig" type="number" min="0" step="0.01" value="25000" required>
+                </div>
+                <div class="field">
+                  <label for="oldbalanceDest">Destination / before</label>
+                  <input id="oldbalanceDest" type="number" min="0" step="0.01" value="10000" required>
+                </div>
+                <div class="field">
+                  <label for="newbalanceDest">Destination / after</label>
+                  <input id="newbalanceDest" type="number" min="0" step="0.01" value="35000" required>
+                </div>
+              </div>
+            </div>
+
+            <button class="scan" type="submit">
+              <span>RUN AI SCREEN</span>
+              <b>→</b>
+            </button>
+            <p class="privacy-note">Local model inference · No transaction is sent to a third-party AI service.</p>
+          </form>
+        </article>
+
+        <article class="card result-card" id="resultPanel">
+          <div class="card-head">
+            <div>
+              <span class="micro">OUTPUT / INVESTIGATION</span>
+              <h2>Risk signal</h2>
+            </div>
+            <span class="live">LIVE</span>
+          </div>
+
+          <div id="emptyState" class="empty">
+            <div class="scan-mark">
+              <span></span><span></span><span></span>
+            </div>
+            <h3>Ready for analysis</h3>
+            <p>Enter transaction details and run the AI screen.</p>
+          </div>
+
+          <div id="verdict" class="verdict hidden" aria-live="polite">
+            <div class="verdict-row">
+              <div>
+                <span class="micro">MODEL VERDICT</span>
+                <h3 id="verdictLabel">LEGITIMATE</h3>
+              </div>
+              <span class="risk" id="riskChip">LOW</span>
+            </div>
+
+            <div class="meter">
+              <div class="meter-top">
+                <span>FRAUD PROBABILITY</span>
+                <strong id="probability">0%</strong>
+              </div>
+              <div class="meter-track"><span id="meterFill"></span></div>
+              <div class="meter-scale"><span>0</span><span>50</span><span>100</span></div>
+            </div>
+
+            <div class="summary">
+              <div><span>TYPE</span><strong id="outType">—</strong></div>
+              <div><span>AMOUNT</span><strong id="outAmount">—</strong></div>
+              <div><span>ENGINE</span><strong>XGBoost</strong></div>
+              <div><span>STATUS</span><strong id="outStatus">SCANNED</strong></div>
+            </div>
+
+            <div class="investigator-note" id="verdictMessage">
+              Transaction looks clean.
+            </div>
+
+            <div class="model-strip">
+              <div><span>MODEL</span><strong>XGBoost</strong></div>
+              <div><span>F1</span><strong>88.83%</strong></div>
+              <div><span>ROC-AUC</span><strong>99.98%</strong></div>
+            </div>
+          </div>
+        </article>
+      </section>
+
+      <section class="signal-bar">
+        <div><span class="signal-dot"></span><strong>FRAUD DETECTION ENGINE</strong></div>
+        <div><span>12 FEATURES</span><span>CLASS-WEIGHTED</span><span>HUMAN REVIEW SUPPORTED</span></div>
+      </section>
+    </main>
+
+    <footer>
+      <span>FRAUDLENS / FINANCIAL AI</span>
+      <span>DECISION SUPPORT · NOT AUTONOMOUS APPROVAL</span>
+    </footer>
+  </div>
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
